@@ -18,6 +18,15 @@ class _LocationInput extends State<LocationInput> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
 
+  String get locationImage {
+    if (_pickedLocation == null) {
+      return '';
+    }
+    final lat = _pickedLocation!.latitude;
+    final lng = _pickedLocation!.longtitude;
+    return 'https://maps.googleapis.com/maps/api/staticmap?center=$lat,$lng=&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C$lat,$lng&key=AIzaSyCSirSgUfol0dSTw_gUMxRi7f_9u1q8Iuw';
+  }
+
   void _getCurrentLocation() async {
     Location location = Location();
 
@@ -49,13 +58,19 @@ class _LocationInput extends State<LocationInput> {
     final lat = locationData.latitude;
     final lng = locationData.longitude;
 
-    final url = Uri.parse('https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=AIzaSyCSirSgUfol0dSTw_gUMxRi7f_9u1q8Iuw');
+    if (lat == null || lng == null) {
+      return;
+    }
+
+    final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=AIzaSyCSirSgUfol0dSTw_gUMxRi7f_9u1q8Iuw');
     final response = await http.get(url);
     final resData = json.decode(response.body);
     final address = resData['results'][0]['formatted_address'];
 
     setState(() {
-      _pickedLocation = PlaceLocation(latitude: lat, longtitude: lng, address: address);
+      _pickedLocation =
+          PlaceLocation(latitude: lat, longtitude: lng, address: address);
       _isGettingLocation = true;
     });
   }
@@ -63,12 +78,21 @@ class _LocationInput extends State<LocationInput> {
   @override
   Widget build(BuildContext context) {
     Widget previewContent = Text(
-            'No location choosen',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-          );
+      'No location choosen',
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
+    );
+    if (_pickedLocation != null) {
+      previewContent = Image.network(
+        locationImage,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      );
+    }
+
     if (_isGettingLocation) {
       previewContent = const CircularProgressIndicator();
     }
