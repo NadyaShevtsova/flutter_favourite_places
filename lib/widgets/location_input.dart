@@ -6,7 +6,9 @@ import 'dart:convert';
 import 'package:favourite_places/models/place.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({super.key, required this.onSelectLocation});
+
+  final void Function(PlaceLocation location) onSelectLocation;
 
   @override
   State<LocationInput> createState() {
@@ -69,10 +71,15 @@ class _LocationInput extends State<LocationInput> {
     final address = resData['results'][0]['formatted_address'];
 
     setState(() {
-      _pickedLocation =
-          PlaceLocation(latitude: lat, longtitude: lng, address: address);
+      _pickedLocation = PlaceLocation(
+        latitude: lat,
+        longtitude: lng,
+        address: address,
+        );
       _isGettingLocation = true;
     });
+
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   @override
