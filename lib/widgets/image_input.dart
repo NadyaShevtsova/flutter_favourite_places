@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -18,14 +19,13 @@ class _ImageInputState extends State<ImageInput> {
 
   void _takePicture() async {
     final imagePicker = ImagePicker();
-    final pickedImage = await imagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 600,
-    );
+    final pickedImage =
+        await imagePicker.pickImage(source: ImageSource.camera, maxWidth: 600);
 
     if (pickedImage == null) {
       return;
     }
+
     setState(() {
       _selectedImage = File(pickedImage.path);
     });
@@ -37,7 +37,7 @@ class _ImageInputState extends State<ImageInput> {
   Widget build(BuildContext context) {
     Widget content = TextButton.icon(
       icon: const Icon(Icons.camera),
-      label: const Text('Take picture'),
+      label: const Text('Take Picture'),
       onPressed: _takePicture,
     );
 
@@ -52,6 +52,7 @@ class _ImageInputState extends State<ImageInput> {
         ),
       );
     }
+
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
